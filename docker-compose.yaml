@@ -1,0 +1,93 @@
+version: '3.9'
+
+services:
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI}
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=${MLFLOW_DEFAULT_ARTIFACT_ROOT}
+      - MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    networks:
+      - back-tier
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: $TF_VAR_ecr_repository_name:latest
+    command: >
+      /bin/bash -c "
+      echo 'Running start.sh' &&
+      /app/start.sh &&
+      sleep 10 &&
+      echo 'Logging in to Prefect Cloud' &&
+      prefect cloud login --key $PREFECT_API_KEY --workspace $PREFECT_WORKSPACE &&
+      echo 'Running Python flow script' &&
+      python run_flow.py"
+    environment:
+      - PREFECT_API_KEY=${PREFECT_API_KEY}
+      - PREFECT_WORKSPACE=${PREFECT_WORKSPACE}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - TF_VAR_ecr_repository_name=${TF_VAR_ecr_repository_name}
+      - TF_VAR_aws_region=${TF_VAR_aws_region}
+    depends_on:
+      - mlflow
+      - db
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - back-tier
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    networks:
+      - back-tier
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"  # Changed to avoid port conflict with app service
+    networks:
+      - back-tier
+      - front-tier
+
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    environment:
+      GF_DATABASE_USER: postgres
+      GF_DATABASE_PASSWORD: example
+      GF_DATABASE_NAME: test
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./dashboards:/opt/grafana/dashboards
+    networks:
+      - back-tier
+      - front-tier
+
+networks:
+  front-tier:
+  back-tier:
+
+volumes:
+  grafana_data: {}
