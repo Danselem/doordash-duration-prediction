@@ -28,9 +28,11 @@ RUN apt-get update && \
     ./aws/install && \
     rm -rf awscliv2.zip aws && \
     curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-    echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+    # echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+    echo "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
     apt-get update && \
-    apt-get install -y docker-ce-cli && \
+    apt-get install -y docker-buildx-plugin:arm64 && \
+    # apt-get install -y docker-ce-cli && \
     apt-get clean
 
 # Copy the current directory contents into the container at /app
@@ -55,6 +57,6 @@ COPY dashboards /app/dashboards
 WORKDIR /app/src
 
 # Expose the necessary ports
-EXPOSE 5000 8080
+EXPOSE 6000 8080
 
 CMD ["/bin/bash"]

@@ -5,17 +5,17 @@ variable "aws_region" {
 
 variable "mlflow_models_bucket" {
   description = "The name of the S3 bucket which stores the best model"
-  default     = "mlflow-models-mannerow"
+  default     = "doordash-modell"
 }
 
 variable "prediction_bucket" {
   description = "The name of the S3 bucket for the scored parquet files"
-  default     = "doordash-duration-prediction-mannerow"
+  default     = "doordash-dur-predd"
 }
 
 variable "project_id" {
   description = "project_id"
-  default = "mlops-zoomcamp"
+  default = "doordash"
 }
 
 variable "docker_image_local_path" {

@@ -2,8 +2,8 @@
 terraform {
   required_version = ">= 1.0"
   backend "s3" {
-    bucket  = "terraform-state-bucket-mm"
-    key     = "mlops-zoomcamp-stg.tfstate"
+    bucket  = "doordash-pred"
+    key     = "doordash-pred-stg.tfstate"
     region  = "us-east-1"
     encrypt = true
   }

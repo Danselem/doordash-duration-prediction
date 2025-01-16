@@ -8,9 +8,9 @@ services:
     environment:
       - MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI}
       - MLFLOW_DEFAULT_ARTIFACT_ROOT=${MLFLOW_DEFAULT_ARTIFACT_ROOT}
-      - MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+      - MLFLOW_TRACKING_URI=http://127.0.0.1:6000
     ports:
-      - "5000:5000"
+      - "6000:6000"
     volumes:
       - ./mlruns:/mlflow/mlruns
     networks:
@@ -33,8 +33,8 @@ services:
     environment:
       - PREFECT_API_KEY=${PREFECT_API_KEY}
       - PREFECT_WORKSPACE=${PREFECT_WORKSPACE}
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
-      - AWS_REGION=${AWS_REGION}
+      - MLFLOW_TRACKING_URI=http://mlflow:6000
+      - AWS_REGION=${AWS_DEFAULT_REGION}
       - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
       - TF_VAR_ecr_repository_name=${TF_VAR_ecr_repository_name}
       - TF_VAR_aws_region=${TF_VAR_aws_region}
