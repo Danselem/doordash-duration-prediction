@@ -34,7 +34,7 @@ services:
       - PREFECT_API_KEY=${PREFECT_API_KEY}
       - PREFECT_WORKSPACE=${PREFECT_WORKSPACE}
       - MLFLOW_TRACKING_URI=http://mlflow:6000
-      - AWS_REGION=${AWS_DEFAULT_REGION}
+      - AWS_REGION=${AWS_REGION}
       - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
       - TF_VAR_ecr_repository_name=${TF_VAR_ecr_repository_name}
       - TF_VAR_aws_region=${TF_VAR_aws_region}
