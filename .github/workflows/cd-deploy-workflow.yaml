@@ -55,8 +55,9 @@ jobs:
           echo "TF_VAR_prediction_bucket=${{ secrets.TF_VAR_prediction_bucket }}" >> .env
 
       # Step 5: Build the Docker Image
-      - name: Debug Repository Name
-        run: echo "Repository Name: ${{ secrets.TF_VAR_ecr_repository_name }}"
+      - name: Build Docker Image
+        run: |
+          docker build -f Dockerfile -t ${{ secrets.TF_VAR_ecr_repository_name }}:latest .
 
       - name: Build Docker Image
         run: |
