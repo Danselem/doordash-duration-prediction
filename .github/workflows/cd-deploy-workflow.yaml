@@ -29,7 +29,7 @@ jobs:
           # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: arn:aws:iam::828221019178:role/githubuser
-          aws-region: us-east-1 #${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # Step 3: Create the kaggle.json file in the working directory
       - name: Create kaggle.json
@@ -47,7 +47,6 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> .env
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
           echo "TF_VAR_ecr_repository_name=${{ secrets.TF_VAR_ecr_repository_name }}" >> .env
           echo "TF_VAR_aws_region=${{ secrets.TF_VAR_aws_region }}" >> .env
