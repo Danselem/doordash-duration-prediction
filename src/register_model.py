@@ -30,32 +30,42 @@ def train_and_log_model(data_path, params):
     X_test, y_test = utils.load_pickle(os.path.join(data_path, "test.pkl"))
 
     with mlflow.start_run():
-        model_type = params.pop("type")
-        model = None
-        # Convert parameters to the appropriate type
-        if model_type == "XGBRegressor":
-            params["max_depth"] = int(params["max_depth"])
-            params["n_estimators"] = int(params["n_estimators"])
-            params["random_state"] = int(params["random_state"])
-            model = XGBRegressor(**params)
-        elif model_type == "Ridge":
-            params["alpha"] = float(params["alpha"])
-            params["random_state"] = int(params["random_state"])
-            model = Ridge(**params)
+        print("Params received:", params)
+
+        # Handle missing 'type' parameter gracefully
+        model_type = params.pop("type", None)
+        
+        if model_type is None:
+            print("Warning: 'type' parameter missing. Using default model (LinearRegression).")
+            model = LinearRegression()  # Use default model
         else:
-            model = LinearRegression()
+            # Convert parameters to the appropriate type and create the model
+            model = None
+            if model_type == "XGBRegressor":
+                params["max_depth"] = int(params["max_depth"])
+                params["n_estimators"] = int(params["n_estimators"])
+                params["random_state"] = int(params["random_state"])
+                model = XGBRegressor(**params)
+            elif model_type == "Ridge":
+                params["alpha"] = float(params["alpha"])
+                params["random_state"] = int(params["random_state"])
+                model = Ridge(**params)
+            else:
+                print(f"Unknown model type: {model_type}. Using default LinearRegression.")
+                model = LinearRegression()
 
         model.fit(X_train, y_train)
 
         # Evaluate model on the validation and test sets
-        val_rmse = mean_squared_error(y_val, model.predict(X_val), squared=False)
+        val_rmse = mean_squared_error(y_val, model.predict(X_val),)
         mlflow.log_metric("val_rmse", val_rmse)
-        # rint(f"Logged val_rmse: {val_rmse}")
-        test_rmse = mean_squared_error(y_test, model.predict(X_test), squared=False)
+        
+        test_rmse = mean_squared_error(y_test, model.predict(X_test),)
         mlflow.log_metric("test_rmse", test_rmse)
 
         # Log the model
         mlflow.sklearn.log_model(model, artifact_path="model")
+
 
 
 @click.command()

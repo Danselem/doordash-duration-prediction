@@ -13,12 +13,22 @@ ECR_REPO ?= $(AWS_ACCOUNT_ID).dkr.ecr.$(TF_VAR_aws_region).amazonaws.com/$(IMAGE
 # Local Setup
 setup:
 	@echo "🚀 Setting up the environment..."
+	# pip install pipenv==2024.0.1 && \
+	# python3 -m venv .venv && \
+	# source .venv/bin/activate && \
+	# # pipenv install --dev && \
+	# pipenv install && \
+	# # pipenv run pip install pre-commit && \
+	# pipenv run pre-commit install
+
 	uv python install 3.9
 	# uv init
-	uv tool install black
 	uv venv
 	. .venv/bin/activate
-	uv add -r requirements.txt
+	uv tool install black
+	uv pip install --all-extras --requirement pyproject.toml
+	uv pip install awscli
+	# uv add -r requirements.txt
 	
 
 # Run pytest on the tests directory
@@ -35,10 +45,10 @@ integration_test:
 # Perform quality checks with isort and black
 quality_checks:
 	@echo "🔍 Performing code quality checks..."
-	uv run isort . && \
-	uv run black .
+	uv tool run isort . && \
+	uv tool run black .
 	# Uncomment the next line to include pylint checks
-	#uv run pylint --recursive=y .
+	# uv tool run pylint --recursive=y .
 
 # Terraform commands
 
@@ -72,7 +82,7 @@ push: build
 # Start the Docker containers only after running tests
 run: test
 	@echo "🏃 Running Docker containers..."
-	docker compose up
+	docker compose up -d
 
 # Build and push the image
 all: push

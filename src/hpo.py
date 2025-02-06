@@ -65,7 +65,7 @@ def run_optimization(data_path: str, num_trials: int):
             mlflow.log_params(params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_val)
-            rmse = mean_squared_error(y_val, y_pred, squared=False)
+            rmse = mean_squared_error(y_val, y_pred,)
             mlflow.log_metric("val_rmse", rmse)
 
         return {"loss": rmse, "status": STATUS_OK}

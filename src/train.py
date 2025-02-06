@@ -21,6 +21,7 @@ from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
 from xgboost import XGBRegressor
 
+
 import utils
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000"))
@@ -74,7 +75,7 @@ def run_train(data_path: str):
             model.fit(X_train, y_train)
             y_pred = model.predict(X_val)
 
-            rmse = mean_squared_error(y_val, y_pred, squared=False)
+            rmse = mean_squared_error(y_val, y_pred,)
             mlflow.log_metric("val_rmse", rmse)
 
             print(f"{model_name} RMSE: {rmse}")

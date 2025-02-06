@@ -25,5 +25,6 @@ variable "docker_image_local_path" {
 
 variable "ecr_repository_name" {
   description = "The name of the ECR repository"
+  default = "doordash-ecrr"
   type        = string
 }

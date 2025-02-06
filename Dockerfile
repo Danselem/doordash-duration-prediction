@@ -14,26 +14,36 @@ RUN pip install pipenv
 RUN pipenv install --deploy --system
 
 # Set Terraform version
-ARG TERRAFORM_VERSION=1.9.3
+ARG TERRAFORM_VERSION=1.10.5
 
-# Install Terraform, AWS CLI, and Docker CLI
-RUN apt-get update && \
-    apt-get install -y wget unzip curl gnupg2 lsb-release && \
-    wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y wget unzip curl gnupg2 lsb-release
+
+# Install Terraform
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     mv terraform /usr/local/bin/ && \
-    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+# Install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
-    rm -rf awscliv2.zip aws && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-    # echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
-    echo "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
+    rm -rf awscliv2.zip aws
+
+# Install Docker
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
     apt-get update && \
-    apt-get install -y docker-buildx-plugin:arm64 && \
-    # apt-get install -y docker-ce-cli && \
-    apt-get clean
+    apt-get install -y docker-ce-cli
+
+# Install Astral and AWS CLI via Snap
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clean up apt-get cache
+RUN apt-get clean
+
 
 # Copy the current directory contents into the container at /app
 COPY . /app
@@ -57,6 +67,6 @@ COPY dashboards /app/dashboards
 WORKDIR /app/src
 
 # Expose the necessary ports
-EXPOSE 6000 8080
+EXPOSE 5000 8080
 
 CMD ["/bin/bash"]

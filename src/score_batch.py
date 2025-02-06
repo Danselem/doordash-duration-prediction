@@ -153,7 +153,7 @@ def apply_model(
 )
 @click.option(
     "--model_bucket",
-    default="mlflow-models-mannerow",
+    default="doordash-modell",
     help="Location where the raw DoorDash data is saved",
 )
 @click.option(
@@ -163,7 +163,7 @@ def apply_model(
 )
 @click.option(
     "--dest_bucket",
-    default="doordash-duration-prediction-mannerow",  # Default path for the resulting files
+    default="doordash-dur-predd",  # Default path for the resulting files
     help="Location where the resulting files will be saved",
 )
 def run(test_data_path: str, model_bucket: str, model_name: str, dest_bucket: str):

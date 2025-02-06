@@ -44,7 +44,7 @@ To get started with the project, follow these steps:
 **1. Clone the repository:**
 
 ```bash
-git clone https://github.com/Mannerow/doordash-duration-prediction
+git clone https://github.com/Danselem/doordash-duration-prediction
 cd doordash-duration-prediction
 ```
 
@@ -55,6 +55,15 @@ cd doordash-duration-prediction
 
 ```bash
 cp .env.template .env
+```
+
+### Instructions for installing other dependencies
+**Terraform**: Follow the instruction in the [link](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+**Astral `uv`**: [link](https://docs.astral.sh/uv/getting-started/installation/).
+
+```bash
+sudo snap install astral-uv --classic && \
+sudo snap install aws-cli --classic
 ```
 
 - **Important:** Open the .env file and fill in all required details before proceeding.
@@ -208,7 +217,7 @@ A pre-commit hook is a script that runs automatically before each commit to chec
 **1. Clone the Repository**
 
 ```bash
-git clone https://github.com/Mannerow/doordash-duration-prediction
+git clone https://github.com/Danselem/doordash-duration-prediction
 cd doordash-duration-prediction
 ```
 
@@ -255,3 +264,51 @@ Whenever code is pushed to the main branch or manually triggered, the CD workflo
 - **Run Docker Compose:** Brings up the required services by running docker compose up.
 
 This ensures that any updates to the code are quickly and reliably deployed to production without manual intervention.
+
+
+### Issues
+If you get the error below while running `make terraform-init`.
+
+```bash
+ Error: validating provider credentials: retrieving caller identity from STS: operation error STS: GetCallerIdentity, https response error StatusCode: 403,
+```
+
+
+**Solution**
+Remove the backend component in the `main.tf` file inside the `infrstructure` directory.
+
+```bash
+backend "s3" {
+    bucket  = "doordash-pred"
+    key     = "doordash-pred-stg.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+  }
+```
+
+### Notes
+Copy kaggle
+
+```bash
+cp kaggle.json ~/.config/kaggle/
+
+chmod 600 ~/.config/kaggle/kaggle.json
+```
+
+```bash
+uv run python src/run_flow.py
+uv run python src/data_preprocess.py
+uv run python src/train.py
+uv run python src/hpo.py 
+export MLFLOW_TRACKING_URI="http://localhost:5000"
+uv run python src/register_model.py 
+uv run python src/register_model.py 
+```
+
+If `PermissionError: [Errno 13] Permission denied: '/app'`
+sudo mkdir -p /app
+sudo chown $USER:$USER /app
+sudo chmod 775 /app
+
+
+uv run python src/score_batch.py

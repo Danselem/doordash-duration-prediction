@@ -1,7 +1,7 @@
 resource "aws_ecr_repository" "ecr_repo" {
-  name = var.repository_name
-
-  image_scanning_configuration {
-    scan_on_push = true
+  name = var.name
+  lifecycle {
+    ignore_changes = [name]  # Ignore changes to the repository name if it already exists
   }
 }
+

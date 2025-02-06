@@ -1,17 +1,13 @@
 # Make sure to manually create state bucket beforehand
 terraform {
   required_version = ">= 1.0"
-  backend "s3" {
-    bucket  = "doordash-pred"
-    key     = "doordash-pred-stg.tfstate"
-    region  = "us-east-1"
-    encrypt = true
-  }
+  
 }
 
 # Cloud provider
 provider "aws" {
   region = var.aws_region
+  profile = "default"
 }
 
 
@@ -33,5 +29,5 @@ module "predictions_data_bucket" {
 
 module "ecr_repository" {
   source = "./modules/ecr"
-  repository_name = var.ecr_repository_name
+  name = "var.ecr_repository_name"
 }
