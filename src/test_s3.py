@@ -22,25 +22,35 @@ def generate_uuids(n):
     return [str(uuid.uuid4()) for _ in range(n)]  # List comprehension for efficiency
 
 def load_best_model(model_bucket, model_name, experiment_name):
-    """Loads best model from MLflow"""
+    """Loads best model from MLflow registry and fetches from S3."""
     client = MlflowClient()
+    
+    # Fetch the experiment ID using the experiment name
     experiment = client.get_experiment_by_name(experiment_name)
     if not experiment:
         raise ValueError(f"No experiment found with name '{experiment_name}'")
 
     experiment_id = experiment.experiment_id
+
+    # Fetch the latest run based on the test_rmse metric
     runs = client.search_runs(
         experiment_ids=[experiment_id], order_by=["metric.test_rmse ASC"], max_results=1
     )
-
     if not runs:
         raise ValueError("No runs found for the given experiment ID.")
     
+    # Get the most recent run's run_id
     most_recent_run = runs[0]
     run_id = most_recent_run.info.run_id
-    logged_model = f"s3://{model_bucket}/{experiment_id}/{run_id}/artifacts/model"
-    
-    model = mlflow.pyfunc.load_model(logged_model)
+
+    # Construct the model URI using the registered model and run_id
+    model_uri = f"models:/{model_name}/4"  # Use the correct model version here
+
+    # Log the model URI
+    print(f"Loading model from MLflow registry URI: {model_uri}")
+
+    # Load the model
+    model = mlflow.pyfunc.load_model(model_uri)
     return model, run_id
 
 def save_results(df, y_pred, y_test, run_id, output_file):

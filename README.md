@@ -301,8 +301,13 @@ uv run python src/data_preprocess.py
 uv run python src/train.py
 uv run python src/hpo.py 
 export MLFLOW_TRACKING_URI="http://localhost:5000"
-uv run python src/register_model.py 
-uv run python src/register_model.py 
+uv run python src/register_model.py
+uv run python src/upload_s3.py  
+uv run python src/test_s3.py
+uv run python src/monitor_metrics.py
+
+
+uv run python src/score_batch.py 
 ```
 
 If `PermissionError: [Errno 13] Permission denied: '/app'`

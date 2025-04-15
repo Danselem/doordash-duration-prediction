@@ -25,6 +25,7 @@ from xgboost import XGBRegressor
 import utils
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000"))
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("model-train")
 
 
@@ -48,7 +49,7 @@ def run_train(data_path: str):
 
     for model_name, model in models.items():
         with mlflow.start_run(run_name=model_name):
-            mlflow.set_tag("Developer", "Michael Mannerow")
+            mlflow.set_tag("Developer", "Daniel Egbo")
             mlflow.set_tag("model", model_name)
 
             X_train, y_train = utils.load_pickle(os.path.join(data_path, "train.pkl"))
